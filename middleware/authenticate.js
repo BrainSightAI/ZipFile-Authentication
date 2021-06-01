@@ -1,10 +1,9 @@
+const express = require('express')
 const fs = require('fs')
 const admzip = require('adm-zip')
 const path = require('path')
-const { hostname } = require('os')
 const decompress = require("decompress")
-const { brotliDecompress } = require('zlib')
-
+const app = express()
 
 function authenticate(req, res, next) {
     var dirPath = process.cwd() + "/public/compressed/" + req.files[0].originalname;
