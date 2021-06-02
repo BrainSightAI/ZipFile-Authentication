@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs')
 const multer = require('multer')
 const authenticate = require('../middleware/authenticate')
+    // const MulterAzureStorage = require('multer-azure-blob-storage').MulterAzureStorage;
 
 
 
@@ -30,6 +31,32 @@ var storage = multer.diskStorage({
     },
 });
 var compressfilesupload = multer({ storage: storage });
+
+
+// const yourCustomLogic = (req, file) => {
+//     return Date.now().toString() + "." + file.originalname.toLowerCase().split(" ").join("-")
+// }
+
+// const resolveBlobName = (req, file) => {
+//     return new Promise((resolve, reject) => {
+//         const blobName = yourCustomLogic(req, file);
+//         resolve(blobName);
+//     });
+// };
+
+// const azureStorage = new MulterAzureStorage({
+//     connectionString: 'DefaultEndpointsProtocol=https;AccountName=vuestorage1;AccountKey=w8hTY+1EWs9ox+NhL2JrM9cl6P129UqVNKmfaRubgveU06VlaIVODdhn1157QyO2nDoeM6stfDcG9UuBGWhGaQ==;EndpointSuffix=core.windows.net',
+//     accessKey: 'w8hTY+1EWs9ox+NhL2JrM9cl6P129UqVNKmfaRubgveU06VlaIVODdhn1157QyO2nDoeM6stfDcG9UuBGWhGaQ==',
+//     accountName: 'vuestorage1',
+//     containerName: 'vue-js-mri',
+//     blobName: resolveBlobName,
+//     containerAccessLevel: 'blob',
+//     urlExpirationTime: 60
+// });
+
+// const upload = multer({
+//     storage: azureStorage
+// });
 
 router.get("/", (req, res) => {
     res.sendFile(process.cwd() + "/index.html")
