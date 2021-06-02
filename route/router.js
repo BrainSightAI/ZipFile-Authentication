@@ -5,6 +5,30 @@ const multer = require('multer')
 const authenticate = require('../middleware/authenticate')
     // const MulterAzureStorage = require('multer-azure-blob-storage').MulterAzureStorage;
 
+const { ShareServiceClient, StorageSharedKeyCredential } = require("@azure/storage-file-share");
+// Enter your storage account name and shared key
+const account = "zipfilestorages";
+const accountKey = "etf5UNKhZK/XBoXxvo4tGAKE3hRoqAuABQaOawjOvEYrhnyl/rVZ9tTEkpDMfAl1OrunymaPC5iz/XujMU1lig==";
+
+// Use StorageSharedKeyCredential with storage account and account key
+// StorageSharedKeyCredential is only available in Node.js runtime, not in browsers
+const credential = new StorageSharedKeyCredential(account, accountKey);
+const serviceClient = new ShareServiceClient(
+    // When using AnonymousCredential, following url should include a valid SAS
+    `https://${account}.file.core.windows.net`,
+    credential
+);
+
+async function main() {
+    let shareIter = serviceClient.listShares();
+    let i = 1;
+    for await (const share of shareIter) {
+        console.log(`Share${i}: ${share.name}`);
+        i++;
+    }
+}
+
+main();
 
 
 var dir = "public";
