@@ -16,7 +16,6 @@ if (!fs.existsSync(dir)) {
 
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
-
         cb(null, "public/compressed");
     },
     filename: function(req, file, cb) {
@@ -27,7 +26,6 @@ var storage = multer.diskStorage({
     },
 });
 var compressfilesupload = multer({ storage: storage });
-
 
 router.get("/", (req, res) => {
     res.sendFile(process.cwd() + "/index.html")
