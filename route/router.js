@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs')
 const multer = require('multer')
-const authenticate = require('../middleware/authenticate')
-var dir = "public";
-var subDirectory = "public/compressed";
-var subDirectory = "public/compressed";
-var sub2Directory = "public/unzip";
+const authenticate = require('../middleware/zipfunction/zip')
+var dir = "zipyfy";
+var subDirectory = "zipyfy/zip";
+var subDirectory = "zipyfy/zip";
+var sub2Directory = "zipyfy/unzip";
 
 if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
@@ -16,7 +16,7 @@ if (!fs.existsSync(dir)) {
 
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, "public/compressed");
+        cb(null, "zipyfy/zip");
     },
     filename: function(req, file, cb) {
         cb(
@@ -32,8 +32,8 @@ router.get("/", (req, res) => {
 })
 
 router.post("/zip_authrozation", compressfilesupload.array("file", 100), authenticate, (req, res) => {
-    var dirPath = process.cwd() + "/public/compressed/" + req.files[0].originalname;
-    var destPath = process.cwd() + "/public/unzip";
+    var dirPath = process.cwd() + "/zipyfy/zip/" + req.files[0].originalname;
+    var destPath = process.cwd() + "/zipyfy/unzip";
     fs.readdir(destPath, function(err, files) {
         files.forEach((file) => {
             fs.unlinkSync(destPath + "/" + file)
