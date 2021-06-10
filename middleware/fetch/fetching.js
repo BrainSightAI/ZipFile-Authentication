@@ -1,61 +1,46 @@
-const express = require("express");
-const fs = require("fs");
-const app = express();
-const fileautehen = require('../authentication/fileauthenticate')
-const fileaut = new fileautehen();
-const admzip = require("adm-zip");
-var zip = new admzip();
 var Magic = require('mmmagic').Magic;
-var magic = new Magic();
 const path = require("path");
+const fs = require("fs");
+const renamefiles = require('../fetch/rename')
+var magic = new Magic();
+const data = new renamefiles()
 
 class fetching {
 
-    async fetch(zipPath, unzipPath) {
-        const mainfolder = fs.readdirSync(unzipPath, "utf-8");
-        console.log(mainfolder)
-        var dirct = this.filedircheck(mainfolder, unzipPath);
-        var dictlavel2 = this.rear(dirct, unzipPath);
-        if (dictlavel2.length >= 0) {
-            var dirct = this.filedircheck(dictlavel2, unzipPath);
-            var dictlavel2 = this.rear(dirct, unzipPath);
-
+    async recursivecall(dipPath) {
+        const getAllFiles = function(dirPath, arrayOfFiles) {
+            var files = fs.readdirSync(dirPath)
+            var arrayOfFiles = arrayOfFiles || []
+            files.forEach(function(file) {
+                if (fs.statSync(dirPath + "/" + file).isDirectory()) {
+                    arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles)
+                } else {
+                    arrayOfFiles.push(path.join(dirPath, "/", file))
+                }
+            })
+            return arrayOfFiles
         }
+        const result = getAllFiles(dipPath);
+        this.processdata(result)
     }
 
-    filedircheck(mainfolder, unzipPath) {
-        var dir = [];
-        for (var i = 0; i < mainfolder.length; i++) {
-            var stats = fs.statSync(unzipPath + "/" + mainfolder[i]);
-            var status = (stats.isDirectory());
-
-            if (status === true) {
-                dir.push(mainfolder[i]);
-            } else {
-                var status = this.authenfilee(mainfolder[i], unzipPath);
-            }
-            console.log(status);
-        }
-        return dir;
+    processdata(file) {
+        (file.map(files => {
+            this.detectMimeType(files)
+        }))
     }
 
-    rear(dirct, unzipPath) {
-        const destP = (unzipPath + "/" + dirct[0]);
-        const mainfol = fs.readdirSync(destP, "utf-8");
-        return mainfol;
-
-    }
-
-    authenfilee(file, unzipPath) {
-        const filepath = (unzipPath + "/" + file)
-        magic.detectFile(filepath, function(err, result) {
-            if (err) throw err;
+    detectMimeType(files) {
+        (magic.detectFile(files, function(err, result) {
             if (result === "DICOM medical imaging data") {
-                return "Authorization is failed";
+                data.renamefile(files)
             } else if (result !== "DICOM medical imaging data") {
-                return "Authorization is failed"
+                fs.unlinkSync(files)
             }
-        });
+            // const dir = process.cwd() + "/zipyfy/unzip";
+            // fs.rmdirSync(dir, { recursive: true });
+
+        }))
     }
 }
 module.exports = fetching;
