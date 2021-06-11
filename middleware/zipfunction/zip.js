@@ -17,5 +17,4 @@ async function authenticate(req, res, next) {
     zipobj.recursivecall(unzipPath)
     next();
 }
-
 module.exports = authenticate;
