@@ -14,6 +14,8 @@ if (fs.existsSync(dir)) {
     fs.mkdirSync(dir);
     fs.mkdirSync(subDirectory);
     fs.mkdirSync(sub2Directory);
+
+
     if (!fs.existsSync(dicomdir)) {
         fs.mkdirSync(dicomdir)
     }

@@ -26,17 +26,19 @@ class fetching {
         await data.zipfiy();
         await connection.storage()
         fs.rmdirSync((process.cwd() + "/diacomfolder"), { recursive: true })
+        fs.unlinkSync((process.cwd() + "/output.zip"))
     }
+
     async processdata(files) {
         for (var i = 0; i < files.length; i++) {
             await (async() => {
-                const stream = fs.createReadStream(files[i]);
-                const fileExt = await FileType.fromStream(stream);
-                const ext = fileExt.ext;
-                if (ext === "dcm") {
+                var stream = fs.createReadStream(files[i]);
+                var fileExt = await FileType.fromStream(stream);
+                var extension = (fileExt.ext);
+                if (extension === 'dcm') {
                     //send each file for renaming and moving to new folder
                     data.renamefile(files[i])
-                } else if (ext !== "DICOM medical imaging data") {
+                } else if (extension !== "dcm") {
                     fs.unlinkSync(files[i])
                 }
             })();
