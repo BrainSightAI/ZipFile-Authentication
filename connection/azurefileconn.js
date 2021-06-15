@@ -1,3 +1,5 @@
+const fs = require("fs")
+
 class azure {
 
     fileconnection() {
@@ -7,9 +9,9 @@ class azure {
             StorageSharedKeyCredential,
         } = require("@azure/storage-file-share");
         // Enter your storage account name and shared key
-        const account = "zipfilestorages";
+        const account = "diacom";
         const accountKey =
-            "etf5UNKhZK/XBoXxvo4tGAKE3hRoqAuABQaOawjOvEYrhnyl/rVZ9tTEkpDMfAl1OrunymaPC5iz/XujMU1lig==";
+            "II7PuJjAAH71M6u86vgspzpmJ9PVWiAtiMJWuzsVKCe6yD693dUqgL7dtt9z2j043Lybw4u0e0byVZmwxH+smA==";
 
         // Use StorageSharedKeyCredential with storage account and account key
         // StorageSharedKeyCredential is only available in Node.js runtime, not in browsers
@@ -21,41 +23,30 @@ class azure {
         );
         return serviceClient;
     }
-    storage(req) {
-        var shareName = "zip-file";
-        var directoryName = "zipfiledata";
-        // zipfile = (req.files[0].originalname, zip.toBuffer());
-        var zipfile = req;
+
+    storage() {
+        const zipfile = (process.cwd() + "/output.zip")
+        var shareName = "diacom";
+        var directoryName = "diacom-images";
+        // var zipfile = req;
         const directoryClent = this.fileconnection();
         async function main() {
             const directoryClient = directoryClent
                 .getShareClient(shareName)
                 .getDirectoryClient(directoryName);
-
-            const content = "Hello World!hhhh";
             const fileName = zipfile;
             const fileClient = directoryClient.getFileClient(fileName);
-            await fileClient.create(content.length);
-            console.log(`Create file ${fileName} successfully`);
-
-            // Upload file range
-            await fileClient.uploadRange(content, 0, content.length);
-            console.log(
-                `Upload file range "${content}" to ${fileName} successfully`
-            );
-
-            let shareIter = directoryClent.listShares();
-            let i = 1;
-            for await (const share of shareIter) {
-                console.log(`Share${i}: ${share.name}`);
-                i++;
-            }
+            var dirr = (process.cwd() + "/app.zip")
+                //const fileSize = fs.statSync(dirr).size;
+                // await fileClient.uploadStream(fs.createReadStream(dirr), fileSize, 4 * 1024 * 1024, 20)
+            await fileClient.uploadFile(dirr, {
+                rangeSize: 4 * 1024 * 1024, // 4MB range size
+                parallelism: 20 // 20 concurrency
+            })
         }
         main();
     }
-
 }
-
 
 
 module.exports = azure;
