@@ -1,10 +1,7 @@
-var Magic = require('mmmagic').Magic;
 const path = require("path");
 const fs = require("fs");
 const renamefiles = require('../fetch/rename')
-var magic = new Magic();
 const data = new renamefiles()
-    // const fs = require('fs');
 const FileType = require('file-type');
 const azureconn = require('../../connection/azurefileconn')
 const connection = new azureconn();
@@ -31,38 +28,19 @@ class fetching {
         fs.rmdirSync((process.cwd() + "/diacomfolder"), { recursive: true })
     }
     async processdata(files) {
-            for (var i = 0; i < files.length; i++) {
-                await (async() => {
-                    const stream = fs.createReadStream(files[i]);
-                    const fileExt = await FileType.fromStream(stream);
-                    const ext = fileExt.ext;
-                    if (ext === "dcm") {
-                        //send each file for renaming and moving to new folder
-                        data.renamefile(files[i])
-                    } else if (ext !== "DICOM medical imaging data") {
-                        fs.unlinkSync(files[i])
-                    }
-                })();
-            }
+        for (var i = 0; i < files.length; i++) {
+            await (async() => {
+                const stream = fs.createReadStream(files[i]);
+                const fileExt = await FileType.fromStream(stream);
+                const ext = fileExt.ext;
+                if (ext === "dcm") {
+                    //send each file for renaming and moving to new folder
+                    data.renamefile(files[i])
+                } else if (ext !== "DICOM medical imaging data") {
+                    fs.unlinkSync(files[i])
+                }
+            })();
         }
-        //=> {ext: 'mp4', mime: 'video/mp4'}
-
-    // processdata(files) {
-    //     for (var i = 0; i < files.length; i++) {
-    //         this.detectMimeType(files[i])
-    //     }
-    //     console.log("outside")
-    // }
-
-    ///authentication of diacom file
-    // magic.detectFile(file, function(err, result) {
-    //     if (result === "DICOM medical imaging data") {
-    //         //send each file for renaming and moving to new folder
-    //         data.renamefile(file)
-    //     } else if (result !== "DICOM medical imaging data") {
-    //         fs.unlinkSync(files)
-    //     }
-    // })
-
+    }
 }
 module.exports = fetching;
